@@ -1,0 +1,22 @@
+library(dplyr)
+library(lubridate)
+pdata <- read.table("household_power_consumption.txt", header = TRUE, sep = ";", na.strings = "?", stringsAsFactors = FALSE)
+dpldata <- tbl_df(pdata)
+dpldata <- mutate(dpldata, Date = as.Date(Date, "%d/%m/%Y"))
+dpldata <- filter(dpldata, Date >= "2007-02-01" & Date < "2007-02-03")
+dpldata <- mutate(dpldata, datetime = paste(wday(Date, label = TRUE, locale = Sys.setlocale("LC_TIME", "us")), Date, Time))
+dpldata <- mutate(dpldata, datetime = as.POSIXct(strptime(datetime, "%a %Y-%m-%d %H:%M:%S")))
+png("plot4.png", width = 480, height = 480, units = "px")
+par(mfrow = c(2,2))
+# plot 1
+with(dpldata, plot(datetime, Global_active_power, type = "l", xlab = "", ylab = "Global Active Power"))
+# plot 2
+with(dpldata, plot(datetime, Voltage, type = "l"))
+# plot 3
+with(dpldata, plot(datetime, Sub_metering_1, type = "l", xlab = "", ylab = "Energy sub metering"))
+with(dpldata, lines(datetime, Sub_metering_2, col = "red"))
+with(dpldata, lines(datetime, Sub_metering_3, col = "blue"))
+legend("topright", col = c("black", "red", "blue"), bty = "n", lty = 1, legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+# plot 4
+with(dpldata, plot(datetime, Global_reactive_power, type = "l"))
+dev.off()

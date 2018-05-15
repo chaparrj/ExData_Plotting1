@@ -1,0 +1,11 @@
+library(dplyr)
+library(lubridate)
+pdata <- read.table("household_power_consumption.txt", header = TRUE, sep = ";", na.strings = "?", stringsAsFactors = FALSE)
+dpldata <- tbl_df(pdata)
+dpldata <- mutate(dpldata, Date = as.Date(Date, "%d/%m/%Y"))
+dpldata <- mutate(dpldata, Time = hms(Time))
+dpldata <- filter(dpldata, Date >= "2007-02-01" & Date < "2007-02-03")
+png("plot1.png", width = 480, height = 480, units = "px")
+hist(dpldata$Global_active_power, col = "red", 
+      xlab = "Global Active Power (kilowatts)", main = "Global Active Power")
+dev.off()
